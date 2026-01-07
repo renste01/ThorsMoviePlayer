@@ -3,7 +3,7 @@ package dk.easv.thorsmovieplayer.GUI;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
-public class HelloController {
+public class MoviePlayerController {
     @FXML
     private Label welcomeText;
 
