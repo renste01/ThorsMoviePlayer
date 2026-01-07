@@ -1,6 +1,8 @@
 module dk.easv.thorsmovieplayer {
     requires javafx.controls;
     requires javafx.fxml;
+    requires java.sql;
+    requires com.microsoft.sqlserver.jdbc;
 
 
     opens dk.easv.thorsmovieplayer to javafx.fxml;
