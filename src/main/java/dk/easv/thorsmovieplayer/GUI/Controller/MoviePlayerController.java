@@ -311,7 +311,7 @@ public class MoviePlayerController implements Initializable {
         Movie selectedMovie = movieTable.getSelectionModel().getSelectedItem();  // <-- This uses movieTable
         if (selectedMovie != null) {
             try {
-                selectedMovie.setLastView(java.time.LocalDate.now());
+                selectedMovie.setLastView(java.time.LocalDateTime.now());
                 showInfo("Playing movie: " + selectedMovie.getTitle());
             } catch (Exception e) {
                 showError("Error playing movie: " + e.getMessage());
