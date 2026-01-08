@@ -25,7 +25,7 @@ public class MovieDAOSQLite implements MovieDAO {
     @Override
     public void addMovie(Movie movie) throws Exception {
         //SQL KOMANDO, VALUES HOLDER PLADSER TIL VÆRDIERNE
-     String sql = "INSERT INTO Movie(title, imbdRating, personalRating, filePath, lastView) Values(?,?,?,?,?)";
+     String sql = "INSERT INTO Movie(title, imbdRating, personalRating, filePath, lastView) Values(?,?,?,?,?)"";
 
         //forbinder til vorews database
         try (Connection conn = DriverManager.getConnection(DB_URL);
@@ -37,6 +37,8 @@ public class MovieDAOSQLite implements MovieDAO {
             ps.setNull(3, Types.INTEGER);
             ps.setString(4, movie.getFilePath());
             ps.setNull(5, Types.DATE);
+
+            ps.executeUpdate();
         }
     }
 
