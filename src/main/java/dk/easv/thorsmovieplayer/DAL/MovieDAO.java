@@ -24,6 +24,6 @@ List <Movie> getAllMovies() throws Exception;
     public abstract void updateMovie(Movie movie) throws Exception;
 
     //henter film ud fra ID
-    Movie getmMovie(int id) throws Exception;
+    Movie getMovie(int id) throws Exception;
 
 }
