@@ -25,7 +25,7 @@ public class MovieDAO
         {
         stmt.setString(1, movie.getTitle());
         stmt.setString(2, movie.getFilePath());
-        stmt.setTimestamp(3, Timestamp.valueOf(movie.getLastView()));
+        stmt.setTimestamp(3, Timestamp.valueOf(movie.getLastView().atStartOfDay()));
         stmt.setFloat(4, movie.getPersonalRating());
         stmt.setFloat(5, movie.getImdbRating());
 
