@@ -10,7 +10,7 @@ public class Movie {
     private float imdbRating;
     private float personalRating;
     private String filePath;
-    private LocalDate lastView;
+    private LocalDateTime lastView;
 
     // konstruktør til at hente vores film fra sql databasen
     public Movie(int id, String title, float imdbRating, float personalRating, String filePath, LocalDateTime lastView) {
@@ -50,7 +50,7 @@ public class Movie {
     public String getFilePath() {
         return filePath;
     }
-    public LocalDate getLastView() {
+    public LocalDateTime getLastView() {
         return lastView;
     }
 
@@ -60,7 +60,7 @@ public class Movie {
     public void setPersonalRating(Integer personalRating){
         this.personalRating = personalRating;
     }
-    public void setLastView(LocalDate lastView){
+    public void setLastView(LocalDateTime lastView){
         this.lastView = lastView;
     }
     // til movie Objekt når det printes i listview

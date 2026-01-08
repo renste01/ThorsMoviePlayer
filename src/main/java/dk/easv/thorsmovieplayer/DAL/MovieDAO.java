@@ -5,6 +5,7 @@ import dk.easv.thorsmovieplayer.BE.Movie;
 //Java Imports
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
@@ -25,7 +26,7 @@ public class MovieDAO
         {
         stmt.setString(1, movie.getTitle());
         stmt.setString(2, movie.getFilePath());
-        stmt.setTimestamp(3, Timestamp.valueOf(movie.getLastView().atStartOfDay()));
+        stmt.setTimestamp(3, Timestamp.valueOf(movie.getLastView()));
         stmt.setFloat(4, movie.getPersonalRating());
         stmt.setFloat(5, movie.getImdbRating());
 
