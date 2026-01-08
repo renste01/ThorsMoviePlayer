@@ -14,8 +14,9 @@ public class MoviePlayerApplication extends Application
     {
         FXMLLoader fxmlLoader = new FXMLLoader(MoviePlayerApplication.class.getResource("MoviePlayerView.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Hello!");
+        stage.setTitle("Movie Player");
         stage.setScene(scene);
         stage.show();
     }
+
 }
