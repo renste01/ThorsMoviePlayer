@@ -19,5 +19,6 @@ public class MoviePlayerController {
 
     @FXML
     private void playMovie(ActionEvent actionEvent) {
+
     }
 }

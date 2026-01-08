@@ -1,21 +1,23 @@
 package dk.easv.thorsmovieplayer.BE;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Movie {
 
     private int id;
     private String title;
     private float imdbRating;
-    private Integer personalRating;
+    private float personalRating;
     private String filePath;
     private LocalDate lastView;
 
     // konstruktør til at hente vores film fra sql databasen
-    public Movie(int id, String title, float imdbRating, String filePath, LocalDate lastView) {
+    public Movie(int id, String title, float imdbRating, float personalRating, String filePath, LocalDateTime lastView) {
         this.id = id;
         this.title = title;
         this.imdbRating = imdbRating;
+        this.personalRating = personalRating;
         this.filePath = filePath;
         this.lastView = lastView;
     }
@@ -25,7 +27,7 @@ public class Movie {
         this.imdbRating = imdbRating;
         this.filePath = filePath;
         //Opmærksom den er ikke i konstruktør parameteren
-        this.personalRating = null;
+        this.personalRating = Float.parseFloat(null);
         this.lastView = null;
     }
 
@@ -41,6 +43,9 @@ public class Movie {
     public float getImdbRating() {
         return imdbRating;
     }
+    public float getPersonalRating(){
+        return personalRating;
+    }
 
     public String getFilePath() {
         return filePath;
@@ -50,6 +55,8 @@ public class Movie {
     }
 
     // setter metoderne kan tilføjes flere senere
+    public void setId(int Id){this.id = Id;}
+
     public void setPersonalRating(Integer personalRating){
         this.personalRating = personalRating;
     }

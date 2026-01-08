@@ -62,10 +62,11 @@ public class MovieDAO
         return new Movie(
                 rs.getInt("id"),
                 rs.getString("title"),
-                rs.getString("filePath"),
-                lastView,
+                rs.getFloat("imdbRating"),
                 rs.getFloat("personalRating"),
-                rs.getFloat("imdbRating")
+                rs.getString("filePath"),
+                lastView
+
         );
     }
 
