@@ -12,12 +12,14 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/24.0.1" fx:controller="dk.easv.thorsmovieplayer.GUI.Controller.MoviePlayerController">
+<BorderPane xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.thorsmovieplayer.GUI.Controller.MoviePlayerController">
 
-    <!-- TOP -->
+    <!-- TOP: Menu Bar -->
     <top>
         <MenuBar>
             <Menu text="File">
@@ -27,14 +29,15 @@
                 <MenuItem text="Exit" />
             </Menu>
             <Menu text="Categories">
-                <MenuItem text="Add Category" />
-                <MenuItem text="Remove Category" />
+                <!-- Keep menu items or remove them if you only want buttons -->
+                <MenuItem onAction="#handleAddCategory" text="Add Category" />
+                <MenuItem onAction="#handleRemoveCategory" text="Remove Category" />
             </Menu>
             <Menu text="About" />
         </MenuBar>
     </top>
 
-    <!-- LEFT: FILTERS -->
+    <!-- LEFT: Filters -->
     <left>
         <VBox spacing="10">
             <padding>
@@ -46,8 +49,11 @@
             <Label text="Title" />
             <TextField fx:id="titleFilterField" promptText="Search by title" />
 
-            <Label text="Genres" />
+            <Label text="Categories" />
             <ListView fx:id="genreListView" prefHeight="150" />
+
+            <!-- ADD THESE BUTTONS BELOW THE CATEGORIES LIST (where arrows point) -->
+            <HBox spacing="5" />
 
             <Label text="Min IMDB Rating" />
             <Slider fx:id="ratingSlider" max="10" min="0" showTickLabels="true" value="0" />
@@ -56,22 +62,47 @@
         </VBox>
     </left>
 
-    <!-- CENTER: MOVIE TABLE -->
+    <!-- CENTER: Movie Table -->
     <center>
-        <TableView fx:id="movieTable">
-            <columns>
-                <TableColumn fx:id="titleColumn" prefWidth="200" text="Title" />
-                <TableColumn fx:id="categoryColumn" prefWidth="200" text="Categories" />
-                <TableColumn fx:id="imdbColumn" prefWidth="80" text="IMDB" />
-                <TableColumn fx:id="ratingColumn" prefWidth="120" text="My Rating" />
-            </columns>
-         <BorderPane.margin>
-            <Insets bottom="10.0" />
-         </BorderPane.margin>
-        </TableView>
+        <VBox spacing="10">
+            <!-- ADD MOVIE-CATEGORY BUTTONS ABOVE THE TABLE -->
+            <HBox alignment="CENTER_LEFT" spacing="5">
+                <padding>
+                    <Insets left="10" top="10" />
+                </padding>
+                <Button onAction="#handleAddCategoryToMovie" prefHeight="25.0" prefWidth="147.0" text="Add Category to Movie" />
+                <Button onAction="#handleRemoveCategoryFromMovie" prefHeight="25.0" prefWidth="187.0" text="Remove Category from Movie" />
+                <Button onAction="#handleAddCategory" prefWidth="100" text="Add Category" />
+                <Button onAction="#handleRemoveCategory" prefHeight="25.0" prefWidth="131.0" text="Remove Category" />
+            </HBox>
+
+            <TableView fx:id="movieTable">
+                <columns>
+                    <TableColumn fx:id="titleColumn" prefWidth="200" text="Title">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="title" />
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="categoryColumn" prefWidth="200" text="Categories" />
+                    <TableColumn fx:id="imdbColumn" prefWidth="80" text="IMDB">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="imdbRating" />
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="ratingColumn" prefWidth="120" text="My Rating">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="personalRating" />
+                        </cellValueFactory>
+                    </TableColumn>
+                </columns>
+                <BorderPane.margin>
+                    <Insets bottom="10.0" left="10.0" right="10.0" />
+                </BorderPane.margin>
+            </TableView>
+        </VBox>
     </center>
 
-    <!-- RIGHT: DETAILS -->
+    <!-- RIGHT: Movie Details -->
     <right>
         <VBox spacing="10">
             <padding>
