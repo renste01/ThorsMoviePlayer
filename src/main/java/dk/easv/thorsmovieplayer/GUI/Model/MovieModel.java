@@ -1,12 +1,12 @@
 package dk.easv.thorsmovieplayer.GUI.Model;
-
+// Project imports
 import dk.easv.thorsmovieplayer.BE.Category;
 import dk.easv.thorsmovieplayer.BE.Movie;
 import dk.easv.thorsmovieplayer.BLL.CategoryManager;
 import dk.easv.thorsmovieplayer.BLL.MovieManager;
+// Java Imports
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -23,6 +23,7 @@ public class MovieModel {
     // Constructor - sets up the model with movies and categories
     public MovieModel() throws IOException, SQLException {
         movieManager = new MovieManager();
+        movieManager.importMoviesFromFolder("data"); // Import from data folder
         movies = FXCollections.observableArrayList();
         movies.addAll(movieManager.getAllMovies());
 

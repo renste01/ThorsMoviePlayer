@@ -3,6 +3,7 @@ package dk.easv.thorsmovieplayer.GUI.Controller;
 import dk.easv.thorsmovieplayer.BE.Category;
 import dk.easv.thorsmovieplayer.BE.Movie;
 import dk.easv.thorsmovieplayer.GUI.Model.MovieModel;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -11,12 +12,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.util.Callback;
 import javafx.collections.ListChangeListener;
-
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -112,7 +113,7 @@ public class MoviePlayerController implements Initializable {
 
     private void loadData() throws SQLException {
         // Load all movies
-        allMovies = FXCollections.observableArrayList(movieModel.getMovies());
+        allMovies.setAll(movieModel.getMovies());
         movieTable.setItems(allMovies);  // <-- This uses movieTable
 
         // Load categories for filter list
@@ -316,7 +317,7 @@ public class MoviePlayerController implements Initializable {
         Movie selectedMovie = movieTable.getSelectionModel().getSelectedItem();  // <-- This uses movieTable
         if (selectedMovie != null) {
             try {
-                selectedMovie.setLastView(java.time.LocalDate.now());
+                selectedMovie.setLastView(LocalDate.from(LocalDateTime.now()));
                 showInfo("Playing movie: " + selectedMovie.getTitle());
             } catch (Exception e) {
                 showError("Error playing movie: " + e.getMessage());
@@ -330,11 +331,6 @@ public class MoviePlayerController implements Initializable {
         allMovies.clear();
         allMovies.addAll(movieModel.getMovies());
         applyFilters();
-    }
-
-    @FXML
-    protected void onHelloButtonClick() {
-        welcomeText.setText("Welcome to JavaFX Application!");
     }
 
     private void showError(String message) {

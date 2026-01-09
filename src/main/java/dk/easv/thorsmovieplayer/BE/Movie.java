@@ -29,7 +29,7 @@ public class Movie {
         this.imdbRating = imdbRating;
         this.filePath = filePath;
         //Opmærksom den er ikke i konstruktør parameteren
-        this.personalRating = Float.parseFloat(null);
+        this.personalRating = 0.0f;
         this.lastView = null;
     }
 
