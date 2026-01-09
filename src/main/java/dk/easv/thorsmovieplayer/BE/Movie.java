@@ -1,10 +1,8 @@
 package dk.easv.thorsmovieplayer.BE;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-
-import dk.easv.thorsmovieplayer.BE.Category;
 
 public class Movie {
 
@@ -13,11 +11,11 @@ public class Movie {
     private float imdbRating;
     private float personalRating;
     private String filePath;
-    private LocalDateTime lastView;
+    private LocalDate lastView;
     private List<Category> categories;
 
     // konstruktør til at hente vores film fra sql databasen
-    public Movie(int id, String title, float imdbRating, float personalRating, String filePath, LocalDateTime lastView) {
+    public Movie(int id, String title, float imdbRating, float personalRating, String filePath, LocalDate lastView) {
         this.id = id;
         this.title = title;
         this.imdbRating = imdbRating;
@@ -41,13 +39,13 @@ public class Movie {
     public float getImdbRating() {return imdbRating;}
     public float getPersonalRating(){return personalRating;}
     public String getFilePath() {return filePath;}
-    public LocalDateTime getLastView() {return lastView;}
+    public LocalDate getLastView() {return lastView;}
     public List<Category> getCategories() {return categories;}
 
     // setter metoderne kan tilføjes flere senere
     public void setId(int Id){this.id = Id;}
     public void setPersonalRating(Integer personalRating){this.personalRating = personalRating;}
-    public void setLastView(LocalDateTime lastView){this.lastView = lastView;}
+    public void setLastView(LocalDate lastView){this.lastView = lastView;}
     public void setCategories(List<Category> categories){this.categories = categories;}
 
     // til movie Objekt når det printes i listview

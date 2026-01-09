@@ -6,7 +6,6 @@ import dk.easv.thorsmovieplayer.BE.Movie;
 import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;  // ADD THIS IMPORT
 import java.util.ArrayList;
 import java.util.List;
 
@@ -167,10 +166,10 @@ public class CategoryDAO {
 
     // Converts a database row to a Movie object
     private Movie mapRowToMovie(ResultSet rs) throws SQLException {
-        LocalDateTime lastView = null;
+        LocalDate lastView = null;
         Timestamp ts = rs.getTimestamp("lastView");
         if (ts != null) {
-            lastView = ts.toLocalDateTime();
+            lastView = ts.toLocalDateTime().toLocalDate();
         }
         return new Movie(
                 rs.getInt("id"),
