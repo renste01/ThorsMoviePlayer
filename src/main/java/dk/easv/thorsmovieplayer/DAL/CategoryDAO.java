@@ -115,8 +115,8 @@ public class CategoryDAO {
         String sql = """
             SELECT c.id, c.name 
             FROM Category c
-            INNER JOIN CatMovie mc ON c.id = mc.categoryId
-            WHERE mc.movieId = ?
+            INNER JOIN CatMovie cm ON c.id = cm.categoryId
+            WHERE cm.movieId = ?
             ORDER BY c.name
             """;
 
@@ -139,8 +139,8 @@ public class CategoryDAO {
         String sql = """
             SELECT m.id, m.title, m.imdbRating, m.personalRating, m.filePath, m.lastView
             FROM Movie m
-            INNER JOIN CatMovie mc ON m.id = mc.movieId
-            WHERE mc.categoryId = ?
+            INNER JOIN CatMovie cm ON m.id = cm.movieId
+            WHERE cm.categoryId = ?
             ORDER BY m.title
             """;
 
@@ -167,19 +167,18 @@ public class CategoryDAO {
 
     // Converts a database row to a Movie object
     private Movie mapRowToMovie(ResultSet rs) throws SQLException {
-        LocalDate lastView = null;  // Changed from LocalDateTime to LocalDate
+        LocalDateTime lastView = null;
         Timestamp ts = rs.getTimestamp("lastView");
         if (ts != null) {
-            lastView = ts.toLocalDateTime().toLocalDate();  // Convert DateTime to Date
+            lastView = ts.toLocalDateTime();
         }
-
         return new Movie(
                 rs.getInt("id"),
                 rs.getString("title"),
                 rs.getFloat("imdbRating"),
                 rs.getFloat("personalRating"),
                 rs.getString("filePath"),
-                ts != null ? ts.toLocalDateTime() : null  // Keep as LocalDateTime for constructor
+                lastView
         );
     }
 }

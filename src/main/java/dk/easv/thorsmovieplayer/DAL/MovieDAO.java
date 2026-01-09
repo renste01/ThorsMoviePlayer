@@ -59,7 +59,6 @@ public class MovieDAO
         if (ts != null) {
             lastView = ts.toLocalDateTime();
         }
-
         return new Movie(
                 rs.getInt("id"),
                 rs.getString("title"),
@@ -67,8 +66,6 @@ public class MovieDAO
                 rs.getFloat("personalRating"),
                 rs.getString("filePath"),
                 lastView
-
         );
     }
-
 }
