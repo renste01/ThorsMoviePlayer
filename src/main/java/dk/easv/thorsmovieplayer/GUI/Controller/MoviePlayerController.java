@@ -5,12 +5,14 @@ import dk.easv.thorsmovieplayer.BE.Movie;
 import dk.easv.thorsmovieplayer.GUI.Model.MovieModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
+import javafx.collections.ListChangeListener;
 
 import java.io.IOException;
 import java.net.URL;
@@ -38,11 +40,18 @@ public class MoviePlayerController implements Initializable {
 
     private MovieModel movieModel;
     private ObservableList<Movie> allMovies;
+    private FilteredList<Movie> filteredMovies;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
             movieModel = new MovieModel();
+            allMovies = FXCollections.observableArrayList(movieModel.getMovies());
+
+            // Wrap movies in a FilteredList
+            filteredMovies = new FilteredList<>(allMovies, m -> true);
+            movieTable.setItems(filteredMovies);
+
             setupTableView();
             setupFilters();
             loadData();
@@ -84,25 +93,22 @@ public class MoviePlayerController implements Initializable {
         });
     }
 
+
     private void setupFilters() {
-        // Set up genre list view
+        // Title text
+        titleFilterField.textProperty().addListener((obs, oldVal, newVal) -> applyFilters());
+
+        // Rating slider
+        ratingSlider.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
+
+        // Category selection (MULTIPLE) — use ListChangeListener
+        genreListView.getSelectionModel().getSelectedItems()
+                .addListener((ListChangeListener<Category>) change -> applyFilters());
+
+        // Multiple selection mode
         genreListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
-        // Add listener for category selection changes
-        genreListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            applyFilters();
-        });
-
-        // Add listener for title filter
-        titleFilterField.textProperty().addListener((observable, oldValue, newValue) -> {
-            applyFilters();
-        });
-
-        // Add listener for rating slider
-        ratingSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            applyFilters();
-        });
     }
+
 
     private void loadData() throws SQLException {
         // Load all movies
@@ -113,37 +119,35 @@ public class MoviePlayerController implements Initializable {
         genreListView.setItems(movieModel.getCategories());
     }
 
+
     private void applyFilters() {
-        try {
-            ObservableList<Movie> filteredMovies = FXCollections.observableArrayList(allMovies);
+        String titleQuery = titleFilterField.getText().toLowerCase().trim();
+        double minRating = ratingSlider.getValue();
+        List<Category> selectedCategories = genreListView.getSelectionModel().getSelectedItems();
 
-            // Filter by selected categories
-            List<Category> selectedCategories = genreListView.getSelectionModel().getSelectedItems();
+        filteredMovies.setPredicate(movie -> {
+            if (movie == null) return false;
+
+            // Title filter
+            if (!titleQuery.isEmpty() && !movie.getTitle().toLowerCase().contains(titleQuery)) {
+                return false;
+            }
+
+            // IMDB rating filter
+            if (movie.getImdbRating() < minRating) {
+                return false;
+            }
+
+            // Category filter (match ANY selected category)
             if (!selectedCategories.isEmpty()) {
-                filteredMovies = movieModel.filterMoviesByCategories(selectedCategories);
+                boolean matches = selectedCategories.stream().anyMatch(movie.getCategories()::contains);
+                if (!matches) return false;
             }
 
-            // Filter by title (partial match, case-insensitive)
-            String titleFilter = titleFilterField.getText().toLowerCase();
-            if (!titleFilter.isEmpty()) {
-                filteredMovies = filteredMovies.filtered(movie ->
-                        movie.getTitle().toLowerCase().contains(titleFilter)
-                );
-            }
-
-            // Filter by minimum IMDB rating
-            double minRating = ratingSlider.getValue();
-            if (minRating > 0) {
-                filteredMovies = filteredMovies.filtered(movie ->
-                        movie.getImdbRating() >= minRating
-                );
-            }
-
-            movieTable.setItems(filteredMovies);  // <-- This uses movieTable
-        } catch (SQLException e) {
-            showError("Error applying filters: " + e.getMessage());
-        }
+            return true;
+        });
     }
+
 
     private void showMovieDetails(Movie movie) {
         detailTitle.setText("Title: " + movie.getTitle());
@@ -303,8 +307,9 @@ public class MoviePlayerController implements Initializable {
         titleFilterField.clear();
         genreListView.getSelectionModel().clearSelection();
         ratingSlider.setValue(0);
-        movieTable.setItems(allMovies);  // <-- This uses movieTable
+        applyFilters();
     }
+
 
     @FXML
     private void playMovie(ActionEvent actionEvent) {
