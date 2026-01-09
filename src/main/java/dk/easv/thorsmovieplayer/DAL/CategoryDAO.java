@@ -54,7 +54,7 @@ public class CategoryDAO {
     // Deletes a category and removes it from all movies
     public void deleteCategory(Category category) throws SQLException {
         // First remove category from all movies
-        String deleteRelationsSql = "DELETE FROM MovieCategory WHERE categoryId = ?";
+        String deleteRelationsSql = "DELETE FROM CatMovie WHERE categoryId = ?";
         try (Connection conn = dbConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(deleteRelationsSql)) {
             stmt.setInt(1, category.getId());
@@ -85,7 +85,7 @@ public class CategoryDAO {
 
     // Links a category to a movie in the junction table
     public void addCategoryToMovie(int movieId, int categoryId) throws SQLException {
-        String sql = "INSERT INTO MovieCategory (movieId, categoryId) VALUES (?, ?)";
+        String sql = "INSERT INTO CatMovie (movieId, categoryId) VALUES (?, ?)";
 
         try (Connection conn = dbConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -98,7 +98,7 @@ public class CategoryDAO {
 
     // Removes a category from a movie in the junction table
     public void removeCategoryFromMovie(int movieId, int categoryId) throws SQLException {
-        String sql = "DELETE FROM MovieCategory WHERE movieId = ? AND categoryId = ?";
+        String sql = "DELETE FROM CatMovie WHERE movieId = ? AND categoryId = ?";
 
         try (Connection conn = dbConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -115,7 +115,7 @@ public class CategoryDAO {
         String sql = """
             SELECT c.id, c.name 
             FROM Category c
-            INNER JOIN MovieCategory mc ON c.id = mc.categoryId
+            INNER JOIN CatMovie mc ON c.id = mc.categoryId
             WHERE mc.movieId = ?
             ORDER BY c.name
             """;
@@ -139,7 +139,7 @@ public class CategoryDAO {
         String sql = """
             SELECT m.id, m.title, m.imdbRating, m.personalRating, m.filePath, m.lastView
             FROM Movie m
-            INNER JOIN MovieCategory mc ON m.id = mc.movieId
+            INNER JOIN CatMovie mc ON m.id = mc.movieId
             WHERE mc.categoryId = ?
             ORDER BY m.title
             """;
