@@ -51,6 +51,28 @@ public class MovieDAO
         }
         return movies;
     }
+    // Updates a movie in the SQLite database
+    public void updateMovie(Movie movie) throws Exception {
+        String sql = "UPDATE Movie SET title = ?, imdbRating = ?, personalRating = ?, filePath = ?, lastView = ? WHERE id = ?";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, movie.getTitle());
+            ps.setFloat(2, movie.getImdbRating());
+            ps.setFloat(3, movie.getPersonalRating());
+            ps.setString(4, movie.getFilePath());
+
+            if (movie.getLastView() != null) {
+                ps.setDate(5, Date.valueOf(movie.getLastView()));
+            } else {
+                ps.setNull(5, Types.DATE);
+            }
+
+            ps.setInt(6, movie.getId());
+            ps.executeUpdate();
+        }
+    }
 
     private Movie mapRowToMovie(ResultSet rs) throws SQLException {
         LocalDateTime lastView = null;
