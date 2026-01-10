@@ -29,7 +29,7 @@ public class Movie {
         this.imdbRating = imdbRating;
         this.filePath = filePath;
         //Opmærksom den er ikke i konstruktør parameteren
-        this.personalRating = Float.parseFloat(null);
+        this.personalRating = 0.0f;
         this.lastView = null;
     }
 
@@ -44,7 +44,8 @@ public class Movie {
 
     // setter metoderne kan tilføjes flere senere
     public void setId(int Id){this.id = Id;}
-    public void setPersonalRating(Integer personalRating){this.personalRating = personalRating;}
+    public void setPersonalRating(float personalRating) {
+        this.personalRating = personalRating;}
     public void setLastView(LocalDate lastView){this.lastView = lastView;}
     public void setCategories(List<Category> categories){this.categories = categories;}
 

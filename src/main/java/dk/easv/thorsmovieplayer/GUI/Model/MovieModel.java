@@ -54,6 +54,11 @@ public class MovieModel {
         categories.add(category);
     }
 
+    public void updatePersonalRating(Movie movie, float newRating) throws SQLException {
+        movieManager.updatePersonalRating(movie, newRating);
+        // No need to refresh the list since we're updating the existing object
+    }
+
     // Deletes a category from database and removes it from the list
     public void deleteCategory(Category category) throws SQLException {
         categoryManager.deleteCategory(category);

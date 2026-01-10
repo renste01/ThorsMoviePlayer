@@ -37,7 +37,7 @@ public class MoviePlayerController implements Initializable {
     @FXML private Label detailCategories;
     @FXML private Label detailImdb;
     @FXML private Slider personalRatingSlider;
-
+    @FXML private Label currentRatingLabel;
     private MovieModel movieModel;
     private ObservableList<Movie> allMovies;
     private FilteredList<Movie> filteredMovies;
@@ -55,6 +55,14 @@ public class MoviePlayerController implements Initializable {
             setupTableView();
             setupFilters();
             loadData();
+
+            // Update rating label in real-time as slider moves
+            personalRatingSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+                // Update the label as user moves the slider with 1 decimal place
+                currentRatingLabel.setText(String.format("%.1f", newVal.doubleValue()));
+            });
+
+
         } catch (IOException | SQLException e) {
             showError("Error initializing application: " + e.getMessage());
             e.printStackTrace();
@@ -64,36 +72,77 @@ public class MoviePlayerController implements Initializable {
     private void setupTableView() {
         // Set up cell value factories
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+
+        // Format IMDB rating column (show 1 decimal place)
         imdbColumn.setCellValueFactory(new PropertyValueFactory<>("imdbRating"));
-        ratingColumn.setCellValueFactory(new PropertyValueFactory<>("personalRating"));
-
-        // Custom cell factory for categories column
-        categoryColumn.setCellFactory(column -> new TableCell<Movie, List<Category>>() {
+        imdbColumn.setCellFactory(column -> new TableCell<Movie, Float>() {
             @Override
-            protected void updateItem(List<Category> categories, boolean empty) {
-                super.updateItem(categories, empty);
-
-                if (empty || categories == null || categories.isEmpty()) {
+            protected void updateItem(Float rating, boolean empty) {
+                super.updateItem(rating, empty);
+                if (empty || rating == null) {
                     setText("");
                 } else {
-                    // Join category names with commas
-                    String categoriesText = categories.stream()
-                            .map(Category::getName)
-                            .collect(Collectors.joining(", "));
-                    setText(categoriesText);
+                    // Format to show 1 decimal place (e.g., "8.5")
+                    setText(String.format("%.1f", rating));
                 }
             }
         });
 
-        // Listen for movie selection changes
-        movieTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                showMovieDetails(newValue);
+        // Format personal rating column (show 1 decimal place)
+        ratingColumn.setCellValueFactory(new PropertyValueFactory<>("personalRating"));
+        ratingColumn.setCellFactory(column -> new TableCell<Movie, Float>() {
+            @Override
+            protected void updateItem(Float rating, boolean empty) {
+                super.updateItem(rating, empty);
+                if (empty || rating == null) {
+                    setText("");
+                } else {
+                    // Format to show 1 decimal place or "Not rated" for 0
+                    if (rating == 0.0f) {
+                        setText("Not rated");
+                    } else {
+                        setText(String.format("%.1f", rating));
+                    }
+                }
             }
         });
+
     }
 
+    @FXML
+    private void handleRatingChange() {
+        Movie selectedMovie = movieTable.getSelectionModel().getSelectedItem();
 
+        if (selectedMovie != null) {
+            // Get the exact value from slider (0.1 increments)
+            float newRating = (float) personalRatingSlider.getValue();
+
+            // Only update if rating has actually changed (using small epsilon)
+            if (Math.abs(selectedMovie.getPersonalRating() - newRating) > 0.001f) {
+                try {
+                    // Update the model
+                    movieModel.updatePersonalRating(selectedMovie, newRating);
+
+                    // Update the local movie object
+                    selectedMovie.setPersonalRating(newRating);
+
+                    // Update the label with formatted value (1 decimal place)
+                    currentRatingLabel.setText(String.format("%.1f", newRating));
+
+                    // Refresh the table to show updated rating
+                    movieTable.refresh();
+
+                    showInfo("Rating updated to: " + String.format("%.1f", newRating));
+                } catch (Exception e) {
+                    showError("Error updating rating: " + e.getMessage());
+                    // Revert slider to original value
+                    personalRatingSlider.setValue(selectedMovie.getPersonalRating());
+                }
+            }
+        } else {
+            showWarning("Please select a movie first.");
+        }
+    }
     private void setupFilters() {
         // Title text
         titleFilterField.textProperty().addListener((obs, oldVal, newVal) -> applyFilters());
@@ -151,7 +200,7 @@ public class MoviePlayerController implements Initializable {
 
     private void showMovieDetails(Movie movie) {
         detailTitle.setText("Title: " + movie.getTitle());
-        detailImdb.setText("IMDB Rating: " + movie.getImdbRating());
+        detailImdb.setText("IMDB Rating: " + String.format("%.1f", movie.getImdbRating()));
 
         // Display categories as comma-separated list
         String categories = movie.getCategories().stream()
@@ -160,6 +209,9 @@ public class MoviePlayerController implements Initializable {
         detailCategories.setText("Categories: " + (categories.isEmpty() ? "None" : categories));
 
         personalRatingSlider.setValue(movie.getPersonalRating());
+
+        // Update the rating label
+        currentRatingLabel.setText(String.format("%.1f", movie.getPersonalRating()));
     }
 
     @FXML
