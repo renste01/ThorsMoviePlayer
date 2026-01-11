@@ -41,7 +41,7 @@ public class DBConnector
     }
 
 
-    public static void main(String[] args) throws Exception {
+    static void main(String[] args) throws Exception {
         DBConnector databaseConnector = new DBConnector();
 
         try (Connection connection = databaseConnector.getConnection()) {
