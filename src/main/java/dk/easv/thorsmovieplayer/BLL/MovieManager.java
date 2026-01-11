@@ -4,7 +4,6 @@ import dk.easv.thorsmovieplayer.BE.Movie;
 import dk.easv.thorsmovieplayer.DAL.CategoryDAO;
 import dk.easv.thorsmovieplayer.DAL.MovieDAO;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -38,35 +37,18 @@ public class MovieManager
         return movieDAO.createMovie(movie);
     }
 
-    public void importMoviesFromFolder(String folderPath) throws SQLException {
-        File folder = new File(folderPath);
-
-        if (!folder.exists() || !folder.isDirectory()) {
-            return;
-        }
-
-        File[] files = folder.listFiles((dir, name) ->
-                name.endsWith(".mp4") || name.endsWith(".mpeg4")
-        );
-
-        if (files == null) return;
-
-        List<Movie> existingMovies = movieDAO.getAllMovies();
-
-        for (File file : files) {
-            boolean exists = existingMovies.stream().anyMatch(m -> m.getFilePath().equals(file.getAbsolutePath()));
-            if (!exists) {
-                Movie movie = new Movie(
-                        file.getName(),
-                        0.0f,                 // imdbRating unknown
-                        file.getAbsolutePath()
-                );
-                movieDAO.createMovie(movie);
-            }
-        }
+    public void updateMovie(Movie movie) throws SQLException {
+        movieDAO.updateMovie(movie);
     }
 
+    public void deleteMovie(Movie movie) throws SQLException {
+        movieDAO.deleteMovie(movie);
+    }
 
+    public void updatePersonalRating(Movie movie, float newRating) throws SQLException {
+        movie.setPersonalRating(newRating);
+        movieDAO.updateMovie(movie);
+    }
 
 
 }

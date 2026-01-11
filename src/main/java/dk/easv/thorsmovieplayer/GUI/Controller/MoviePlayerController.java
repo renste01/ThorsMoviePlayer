@@ -3,7 +3,6 @@ package dk.easv.thorsmovieplayer.GUI.Controller;
 import dk.easv.thorsmovieplayer.BE.Category;
 import dk.easv.thorsmovieplayer.BE.Movie;
 import dk.easv.thorsmovieplayer.GUI.Model.MovieModel;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -12,12 +11,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.Callback;
 import javafx.collections.ListChangeListener;
+
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -29,16 +28,16 @@ public class MoviePlayerController implements Initializable {
     @FXML private TextField titleFilterField;
     @FXML private ListView<Category> genreListView;
     @FXML private Slider ratingSlider;
-    @FXML private TableView<Movie> movieTable;  // <-- THIS ONE IS CRITICAL
+    @FXML private TableView<Movie> movieTable;
     @FXML private TableColumn<Movie, String> titleColumn;
-    @FXML private TableColumn<Movie, List<Category>> categoryColumn;
+    @FXML private TableColumn<Movie, String> categoryColumn;
     @FXML private TableColumn<Movie, Float> imdbColumn;
     @FXML private TableColumn<Movie, Float> ratingColumn;
     @FXML private Label detailTitle;
     @FXML private Label detailCategories;
     @FXML private Label detailImdb;
     @FXML private Slider personalRatingSlider;
-
+    @FXML private Label currentRatingLabel;
     private MovieModel movieModel;
     private ObservableList<Movie> allMovies;
     private FilteredList<Movie> filteredMovies;
@@ -47,15 +46,24 @@ public class MoviePlayerController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         try {
             movieModel = new MovieModel();
-            allMovies = FXCollections.observableArrayList(movieModel.getMovies());
+            allMovies = FXCollections.observableArrayList(movieModel.getMovies()); //This works as a bakcing list, so it basically holds the "master" movies that FilteredList will wrap
 
             // Wrap movies in a FilteredList
             filteredMovies = new FilteredList<>(allMovies, m -> true);
-            movieTable.setItems(filteredMovies);
+
+            movieTable.setItems(filteredMovies); //Now the tableView will be bound to the filteredList and not directly to AllMovies
 
             setupTableView();
             setupFilters();
-            loadData();
+            loadData(); //Refreshes AllMovies and categories and applies the filters
+
+            // The Rating label will now show the number in real-time as slider moves
+            personalRatingSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+                // This will update the label as user moves the slider with 1 decimal place
+                currentRatingLabel.setText(String.format("%.1f", newVal.doubleValue()));
+            });
+
+
         } catch (IOException | SQLException e) {
             showError("Error initializing application: " + e.getMessage());
             e.printStackTrace();
@@ -63,38 +71,90 @@ public class MoviePlayerController implements Initializable {
     }
 
     private void setupTableView() {
-        // Set up cell value factories
+        //Set up cell value factories
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+
+        //Categories as a joined string shown directly
+        //A joined string is when you take a collection of values (like a List<String>) and combine them into one string with a separator such as a comma and a space).
+        categoryColumn.setCellValueFactory(cellData -> {
+            String text = cellData.getValue().getCategories().stream()
+                    .map(Category::getName)
+                    .collect(Collectors.joining(", "));
+            return new javafx.beans.property.ReadOnlyObjectWrapper<>(text);
+        });
+
+        //Format IMDB rating column (show 1 decimal place)
         imdbColumn.setCellValueFactory(new PropertyValueFactory<>("imdbRating"));
-        ratingColumn.setCellValueFactory(new PropertyValueFactory<>("personalRating"));
+        imdbColumn.setCellFactory(column -> new TableCell<Movie, Float>() {
 
-        // Custom cell factory for categories column
-        categoryColumn.setCellFactory(column -> new TableCell<Movie, List<Category>>() {
             @Override
-            protected void updateItem(List<Category> categories, boolean empty) {
-                super.updateItem(categories, empty);
-
-                if (empty || categories == null || categories.isEmpty()) {
+            protected void updateItem(Float rating, boolean empty) {
+                super.updateItem(rating, empty);
+                if (empty || rating == null) {
                     setText("");
                 } else {
-                    // Join category names with commas
-                    String categoriesText = categories.stream()
-                            .map(Category::getName)
-                            .collect(Collectors.joining(", "));
-                    setText(categoriesText);
+                    // Format to show 1 decimal place (e.g., "8.5")
+                    setText(String.format("%.1f", rating));
                 }
             }
         });
 
-        // Listen for movie selection changes
-        movieTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                showMovieDetails(newValue);
+        // Format personal rating column (shows “Not rated” for 0.0)
+        ratingColumn.setCellValueFactory(new PropertyValueFactory<>("personalRating"));
+        ratingColumn.setCellFactory(column -> new TableCell<Movie, Float>() {
+
+            @Override
+            protected void updateItem(Float rating, boolean empty) {
+                super.updateItem(rating, empty);
+                if (empty || rating == null) {
+                    setText("");
+                } else {
+                    // Format to show 1 decimal place or "Not rated" for 0
+                    if (rating == 0.0f) {
+                        setText("Not rated");
+                    } else {
+                        setText(String.format("%.1f", rating));
+                    }
+                }
             }
         });
+
     }
 
+    @FXML
+    private void handleRatingChange() {
+        Movie selectedMovie = movieTable.getSelectionModel().getSelectedItem();
 
+        if (selectedMovie != null) {
+            // Get the exact value from slider (0.1 increments)
+            float newRating = (float) personalRatingSlider.getValue();
+
+            // Only update if rating has actually changed (using small epsilon)
+            if (Math.abs(selectedMovie.getPersonalRating() - newRating) > 0.001f) {
+                try {
+                    // Update the model
+                    movieModel.updatePersonalRating(selectedMovie, newRating);
+
+                    // Update the local movie object
+                    selectedMovie.setPersonalRating(newRating);
+
+                    // Update the label with formatted value (1 decimal place)
+                    currentRatingLabel.setText(String.format("%.1f", newRating));
+
+                    // Refresh the table to show updated rating
+                    movieTable.refresh();
+
+                    showInfo("Rating updated to: " + String.format("%.1f", newRating));
+                } catch (Exception e) {
+                    showError("Error updating rating: " + e.getMessage());
+                    // Revert slider to original value
+                    personalRatingSlider.setValue(selectedMovie.getPersonalRating());
+                }
+            }
+        } else {
+            showWarning("Please select a movie first.");
+        }
+    }
     private void setupFilters() {
         // Title text
         titleFilterField.textProperty().addListener((obs, oldVal, newVal) -> applyFilters());
@@ -111,38 +171,46 @@ public class MoviePlayerController implements Initializable {
     }
 
 
+
     private void loadData() throws SQLException {
-        // Load all movies
+        // This refreshes the backing list that filteredMovies wraps (look in initialize)
         allMovies.setAll(movieModel.getMovies());
-        movieTable.setItems(allMovies);  // <-- This uses movieTable
 
         // Load categories for filter list
         genreListView.setItems(movieModel.getCategories());
+
+        // Re-apply filters after data load
+        applyFilters();
     }
 
 
+
+
     private void applyFilters() {
-        String titleQuery = titleFilterField.getText().toLowerCase().trim();
+        String titleQuery = (titleFilterField.getText() == null)
+                ? "" : titleFilterField.getText().toLowerCase().trim();
         double minRating = ratingSlider.getValue();
         List<Category> selectedCategories = genreListView.getSelectionModel().getSelectedItems();
 
+        //Single predicate that combines Title + Min IMDB + Category criteria
+        //predicate is function that takes items and returns true or false. So here it shows the FilteredList which movies to keep in the list using true or false.
         filteredMovies.setPredicate(movie -> {
             if (movie == null) return false;
 
-            // Title filter
-            if (!titleQuery.isEmpty() && !movie.getTitle().toLowerCase().contains(titleQuery)) {
-                return false;
+            //Title filter (case-insensitive contains)
+            if (!titleQuery.isEmpty()) {
+                String t = movie.getTitle() == null ? "" : movie.getTitle().toLowerCase();
+                if (!t.contains(titleQuery)) return false;
             }
 
-            // IMDB rating filter
-            if (movie.getImdbRating() < minRating) {
-                return false;
-            }
+            //Min IMDB (internet movie database) rating
+            if (movie.getImdbRating() < minRating) return false;
 
-            // Category filter (match ANY selected category)
-            if (!selectedCategories.isEmpty()) {
-                boolean matches = selectedCategories.stream().anyMatch(movie.getCategories()::contains);
-                if (!matches) return false;
+            //Category filter (match ANY selected category)
+            if (selectedCategories != null && !selectedCategories.isEmpty()) {
+                boolean matchesAny = selectedCategories.stream()
+                        .anyMatch(movie.getCategories()::contains);
+                if (!matchesAny) return false;
             }
 
             return true;
@@ -150,9 +218,10 @@ public class MoviePlayerController implements Initializable {
     }
 
 
+
     private void showMovieDetails(Movie movie) {
         detailTitle.setText("Title: " + movie.getTitle());
-        detailImdb.setText("IMDB Rating: " + movie.getImdbRating());
+        detailImdb.setText("IMDB Rating: " + String.format("%.1f", movie.getImdbRating()));
 
         // Display categories as comma-separated list
         String categories = movie.getCategories().stream()
@@ -161,6 +230,9 @@ public class MoviePlayerController implements Initializable {
         detailCategories.setText("Categories: " + (categories.isEmpty() ? "None" : categories));
 
         personalRatingSlider.setValue(movie.getPersonalRating());
+
+        // Update the rating label
+        currentRatingLabel.setText(String.format("%.1f", movie.getPersonalRating()));
     }
 
     @FXML
@@ -317,7 +389,7 @@ public class MoviePlayerController implements Initializable {
         Movie selectedMovie = movieTable.getSelectionModel().getSelectedItem();  // <-- This uses movieTable
         if (selectedMovie != null) {
             try {
-                selectedMovie.setLastView(LocalDate.from(LocalDateTime.now()));
+                selectedMovie.setLastView(java.time.LocalDate.now());
                 showInfo("Playing movie: " + selectedMovie.getTitle());
             } catch (Exception e) {
                 showError("Error playing movie: " + e.getMessage());
@@ -331,6 +403,11 @@ public class MoviePlayerController implements Initializable {
         allMovies.clear();
         allMovies.addAll(movieModel.getMovies());
         applyFilters();
+    }
+
+    @FXML
+    protected void onHelloButtonClick() {
+        welcomeText.setText("Welcome to JavaFX Application!");
     }
 
     private void showError(String message) {
