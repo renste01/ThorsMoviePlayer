@@ -7,6 +7,8 @@ import dk.easv.thorsmovieplayer.DAL.MovieDAO;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.time.LocalDate;
 
 public class MovieManager
 {
@@ -32,6 +34,8 @@ public class MovieManager
         return movies;
     }
 
+
+
     public Movie createMovie(Movie movie) throws SQLException
     {
         return movieDAO.createMovie(movie);
@@ -49,6 +53,7 @@ public class MovieManager
         movie.setPersonalRating(newRating);
         movieDAO.updateMovie(movie);
     }
+
 
 
 }
