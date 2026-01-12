@@ -17,6 +17,7 @@ import javafx.collections.ListChangeListener;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -24,20 +25,34 @@ import java.util.stream.Collectors;
 
 public class MoviePlayerController implements Initializable {
     // Make sure ALL these @FXML declarations exist:
-    @FXML private Label welcomeText;
-    @FXML private TextField titleFilterField;
-    @FXML private ListView<Category> genreListView;
-    @FXML private Slider ratingSlider;
-    @FXML private TableView<Movie> movieTable;
-    @FXML private TableColumn<Movie, String> titleColumn;
-    @FXML private TableColumn<Movie, String> categoryColumn;
-    @FXML private TableColumn<Movie, Float> imdbColumn;
-    @FXML private TableColumn<Movie, Float> ratingColumn;
-    @FXML private Label detailTitle;
-    @FXML private Label detailCategories;
-    @FXML private Label detailImdb;
-    @FXML private Slider personalRatingSlider;
-    @FXML private Label currentRatingLabel;
+    @FXML
+    private Label welcomeText;
+    @FXML
+    private TextField titleFilterField;
+    @FXML
+    private ListView<Category> genreListView;
+    @FXML
+    private Slider ratingSlider;
+    @FXML
+    private TableView<Movie> movieTable;
+    @FXML
+    private TableColumn<Movie, String> titleColumn;
+    @FXML
+    private TableColumn<Movie, String> categoryColumn;
+    @FXML
+    private TableColumn<Movie, Float> imdbColumn;
+    @FXML
+    private TableColumn<Movie, Float> ratingColumn;
+    @FXML
+    private Label detailTitle;
+    @FXML
+    private Label detailCategories;
+    @FXML
+    private Label detailImdb;
+    @FXML
+    private Slider personalRatingSlider;
+    @FXML
+    private Label currentRatingLabel;
     private MovieModel movieModel;
     private ObservableList<Movie> allMovies;
     private FilteredList<Movie> filteredMovies;
@@ -56,6 +71,7 @@ public class MoviePlayerController implements Initializable {
             setupTableView();
             setupFilters();
             loadData(); //Refreshes AllMovies and categories and applies the filters
+            checkMoviesToDelete();
 
             // The Rating label will now show the number in real-time as slider moves
             personalRatingSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
@@ -69,6 +85,35 @@ public class MoviePlayerController implements Initializable {
             e.printStackTrace();
         }
     }
+
+    public List<Movie> checkMoviesToDelete() {
+        try {
+            List<Movie> moviesToDelete = movieModel.getMovies().stream()
+                    .filter(movie -> movie.getImdbRating() < 6)
+                    .filter(movie -> movie.getLastView() == null || movie.getLastView().isBefore(java.time.LocalDate.now().minusYears(2)))
+                    .collect(Collectors.toList());
+            if (!moviesToDelete.isEmpty()) {
+                String titles = moviesToDelete.stream()
+                        .map(Movie::getTitle)
+                        .collect(Collectors.joining("\n"));
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Reminder");
+                alert.setHeaderText("u should consider deleting these movies");
+                alert.setContentText(titles);
+                alert.showAndWait();
+
+            }
+            return moviesToDelete;
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
 
     private void setupTableView() {
         //Set up cell value factories

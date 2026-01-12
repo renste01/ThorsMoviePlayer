@@ -2,6 +2,7 @@ package dk.easv.thorsmovieplayer.BE;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Movie {
@@ -22,6 +23,7 @@ public class Movie {
         this.personalRating = personalRating;
         this.filePath = filePath;
         this.lastView = lastView;
+        this.categories = new ArrayList<>();
     }
     // konstruktør til at lave nye film
     public Movie(String title, float imdbRating, String filePath) {
@@ -31,6 +33,7 @@ public class Movie {
         //Opmærksom den er ikke i konstruktør parameteren
         this.personalRating = 0.0f;
         this.lastView = null;
+        this.categories = new ArrayList<>();
     }
 
      // getter metoder
