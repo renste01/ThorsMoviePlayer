@@ -4,6 +4,7 @@ import dk.easv.thorsmovieplayer.BE.Movie;
 import dk.easv.thorsmovieplayer.DAL.CategoryDAO;
 import dk.easv.thorsmovieplayer.DAL.MovieDAO;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -55,5 +56,53 @@ public class MovieManager
     }
 
 
+    public void importMoviesFromFolder(String data) throws IOException {
+        try {
+            MovieDAO movieDAO = new MovieDAO();
+            File folder = new File(data);
+
+            if (!folder.exists() || !folder.isDirectory()) {
+                System.out.println("Invalid folder: " + data);
+                return;
+            }
+
+            File[] files = folder.listFiles();
+            if (files == null) return;
+
+            for (File file : files) {
+                if (!file.isFile()) continue;
+
+                String name = file.getName().toLowerCase();
+                if (name.endsWith(".mp4") || name.endsWith(".mpeg4")) {
+
+                    // Use absolute path as an identifier
+                    String path = file.getAbsolutePath();
+
+                    // Check if movie already exists in DB to avoid duplicates
+                    if (movieDAO.getAllMovies().stream()
+                            .anyMatch(m -> m.getFilePath().equals(path))) {
+                        continue; // skip duplicates
+                    }
+
+                    // Create Movie object
+                    Movie movie = new Movie(
+                            0,
+                            file.getName(),
+                            0.0f,
+                            0.0f,
+                            file.getAbsolutePath(),
+                            null
+                    );
+
+                    // Save movie to the databse
+                    movieDAO.createMovie(movie);
+                    System.out.println("Imported movie: " + path);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

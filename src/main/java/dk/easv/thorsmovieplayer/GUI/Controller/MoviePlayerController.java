@@ -89,9 +89,9 @@ public class MoviePlayerController implements Initializable {
     public List<Movie> checkMoviesToDelete() {
         try {
             List<Movie> moviesToDelete = movieModel.getMovies().stream()
-                    .filter(movie -> movie.getImdbRating() < 6)
-                    .filter(movie -> movie.getLastView() == null || movie.getLastView().isBefore(java.time.LocalDate.now().minusYears(2)))
-                    .collect(Collectors.toList());
+                    .filter(movie -> movie.getPersonalRating() != 0f && movie.getPersonalRating() < 6) // checks if it has a rating and it's under 6
+                    .filter(movie -> movie.getLastView() != null && movie.getLastView().isBefore(java.time.LocalDate.now().minusYears(2))) // checks last viewdate
+                    .collect(Collectors.toList()); // adds movies to the warning list if they have the criterias above
             if (!moviesToDelete.isEmpty()) {
                 String titles = moviesToDelete.stream()
                         .map(Movie::getTitle)
@@ -99,7 +99,7 @@ public class MoviePlayerController implements Initializable {
 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Reminder");
-                alert.setHeaderText("u should consider deleting these movies");
+                alert.setHeaderText("You should consider deleting these movies");
                 alert.setContentText(titles);
                 alert.showAndWait();
 
