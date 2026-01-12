@@ -166,6 +166,7 @@ public class MoviePlayerController implements Initializable {
 
     }
 
+
     @FXML
     private void handleRatingChange() {
         Movie selectedMovie = movieTable.getSelectionModel().getSelectedItem();
@@ -227,9 +228,6 @@ public class MoviePlayerController implements Initializable {
         // Re-apply filters after data load
         applyFilters();
     }
-
-
-
 
     private void applyFilters() {
         String titleQuery = (titleFilterField.getText() == null)
@@ -434,8 +432,9 @@ public class MoviePlayerController implements Initializable {
         Movie selectedMovie = movieTable.getSelectionModel().getSelectedItem();  // <-- This uses movieTable
         if (selectedMovie != null) {
             try {
-                selectedMovie.setLastView(java.time.LocalDate.now());
+                selectedMovie.setLastView(java.time.LocalDate.now()); // Updates lastview
                 showInfo("Playing movie: " + selectedMovie.getTitle());
+                movieModel.openMovieInSystemPlayer(selectedMovie); //Plays the movie
             } catch (Exception e) {
                 showError("Error playing movie: " + e.getMessage());
             }

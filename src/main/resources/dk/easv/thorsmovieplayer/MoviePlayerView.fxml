@@ -22,9 +22,10 @@
     <!-- TOP: Menu Bar -->
     <top>
         <MenuBar>
-            <Menu text="File">
+            <Menu text="Movie">
                 <MenuItem text="Add Movie" />
                 <MenuItem text="Remove Movie" />
+                <MenuItem text="Update Movie" />
                 <SeparatorMenuItem />
                 <MenuItem text="Exit" />
             </Menu>

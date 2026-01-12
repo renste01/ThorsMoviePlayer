@@ -7,6 +7,9 @@ import dk.easv.thorsmovieplayer.BLL.MovieManager;
 // Java Imports
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -97,13 +100,28 @@ public class MovieModel {
                     break;
                 }
             }
-
             // If movie has all categories, add it to filtered list
             if (hasAllCategories) {
                 filteredMovies.add(movie);
             }
         }
-
         return filteredMovies;
     }
-}
+    //
+    public void openMovieInSystemPlayer(Movie movie) throws IOException
+    {
+        if (movie == null || movie.getFilePath() == null)
+        {
+            throw new IllegalArgumentException("Movie or file path is not found!");
+        }
+        File movieFile = new File(movie.getFilePath());
+        if (!movieFile.exists())
+        {
+            throw new IOException("Movie file does not exist: " + movie.getFilePath());
+        }
+        if (Desktop.isDesktopSupported()) {Desktop.getDesktop().open(movieFile);}
+        else {
+                throw new IOException("Desktop operations not supported on this system!");
+            }
+        }
+    }
