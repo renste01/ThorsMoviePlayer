@@ -30,7 +30,7 @@
                 <MenuItem text="Exit" />
             </Menu>
             <Menu text="Categories">
-                <!-- Keep menu items or remove them if you only want buttons -->
+                <!-- ONLY Add Category and Remove Category moved to menu -->
                 <MenuItem onAction="#handleAddCategory" text="Add Category" />
                 <MenuItem onAction="#handleRemoveCategory" text="Remove Category" />
             </Menu>
@@ -62,18 +62,16 @@
         </VBox>
     </left>
 
-    <!-- CENTER: Movie Table -->
+    <!-- CENTER: Movie Table with buttons for managing movie categories -->
     <center>
         <VBox spacing="10">
-            <!-- ADD MOVIE-CATEGORY BUTTONS ABOVE THE TABLE -->
+            <!-- KEEP Add Category to Movie and Remove Category from Movie buttons here -->
             <HBox alignment="CENTER_LEFT" spacing="5">
                 <padding>
                     <Insets left="10" top="10" />
                 </padding>
                 <Button onAction="#handleAddCategoryToMovie" prefHeight="25.0" prefWidth="147.0" text="Add Category to Movie" />
                 <Button onAction="#handleRemoveCategoryFromMovie" prefHeight="25.0" prefWidth="187.0" text="Remove Category from Movie" />
-                <Button onAction="#handleAddCategory" prefWidth="100" text="Add Category" />
-                <Button onAction="#handleRemoveCategory" prefHeight="25.0" prefWidth="131.0" text="Remove Category" />
             </HBox>
 
             <TableView fx:id="movieTable">
@@ -121,14 +119,14 @@
                     max="10"
                     min="0"
                     blockIncrement="0.1"
-            majorTickUnit="1"
-            minorTickCount="9"
-            showTickLabels="true"
-            showTickMarks="true"
-            snapToTicks="true"
-            value="0"
-            onMouseReleased="#handleRatingChange"
-            onKeyReleased="#handleRatingChange"/>
+                    majorTickUnit="1"
+                    minorTickCount="9"
+                    showTickLabels="true"
+                    showTickMarks="true"
+                    snapToTicks="true"
+                    value="0"
+                    onMouseReleased="#handleRatingChange"
+                    onKeyReleased="#handleRatingChange"/>
             <Button onAction="#playMovie" text="Play Movie" />
         </VBox>
     </right>
