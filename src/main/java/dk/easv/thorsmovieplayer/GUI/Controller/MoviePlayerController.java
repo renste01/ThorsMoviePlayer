@@ -163,6 +163,14 @@ public class MoviePlayerController implements Initializable {
                 }
             }
         });
+        // Listener to show MovieDetails on click
+        movieTable.getSelectionModel().selectedItemProperty().addListener(
+                (obs, oldMovie, newMovie) -> {
+                    if (newMovie != null) {
+                        showMovieDetails(newMovie);
+                    }
+                }
+        );
 
     }
 

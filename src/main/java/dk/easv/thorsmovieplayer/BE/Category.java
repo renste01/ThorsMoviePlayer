@@ -33,4 +33,22 @@ public class Category {
     public String toString() {
         return name;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Category)) return false;
+
+        Category other = (Category) o;
+
+        if (id == 0 || other.id == 0) {
+            return false; // ikke gemte kategorier er aldrig ens
+        }
+        return id == other.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id == 0 ? super.hashCode() : Integer.hashCode(id);
+    }
 }
