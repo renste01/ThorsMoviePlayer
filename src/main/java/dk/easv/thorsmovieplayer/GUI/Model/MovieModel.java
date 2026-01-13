@@ -50,6 +50,10 @@ public class MovieModel {
     public void refreshCategories() throws SQLException {
         categories.clear();
         categories.addAll(categoryManager.getAllCategories());
+
+        //this adds a virtual "All movies" category at the top (id = 0 to mark it as virtual)
+        Category allMovies = new Category(0, "All movies");
+        categories.add(0, allMovies); //this puts  it as the first item
     }
 
     // Creates a new category and adds it to the list
@@ -107,21 +111,20 @@ public class MovieModel {
         }
         return filteredMovies;
     }
+
     //
-    public void openMovieInSystemPlayer(Movie movie) throws IOException
-    {
-        if (movie == null || movie.getFilePath() == null)
-        {
+    public void openMovieInSystemPlayer(Movie movie) throws IOException {
+        if (movie == null || movie.getFilePath() == null) {
             throw new IllegalArgumentException("Movie or file path is not found!");
         }
         File movieFile = new File(movie.getFilePath());
-        if (!movieFile.exists())
-        {
+        if (!movieFile.exists()) {
             throw new IOException("Movie file does not exist: " + movie.getFilePath());
         }
-        if (Desktop.isDesktopSupported()) {Desktop.getDesktop().open(movieFile);}
-        else {
-                throw new IOException("Desktop operations not supported on this system!");
-            }
+        if (Desktop.isDesktopSupported()) {
+            Desktop.getDesktop().open(movieFile);
+        } else {
+            throw new IOException("Desktop operations not supported on this system!");
         }
     }
+}

@@ -251,11 +251,16 @@ public class MoviePlayerController implements Initializable {
 
             //Category filter (match ANY selected category)
             if (selectedCategories != null && !selectedCategories.isEmpty()) {
-                boolean matchesAny = selectedCategories.stream()
-                        .anyMatch(movie.getCategories()::contains);
-                if (!matchesAny) return false;
+                // If "All movies" is selected, don't filter by categories
+                boolean allMoviesSelected = selectedCategories.stream()
+                        .anyMatch(c -> c.getName() != null && c.getName().equalsIgnoreCase("All movies"));
+                if (!allMoviesSelected) {
+                    // Match ANY selected category (your current behavior)
+                    boolean matchesAny = selectedCategories.stream()
+                            .anyMatch(sc -> movie.getCategories().contains(sc));
+                    if (!matchesAny) return false;
+                }
             }
-
             return true;
         });
     }
