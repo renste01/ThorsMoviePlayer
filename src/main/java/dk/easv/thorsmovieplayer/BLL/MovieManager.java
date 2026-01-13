@@ -8,8 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.time.LocalDate;
 
 public class MovieManager
 {
@@ -76,11 +74,11 @@ public class MovieManager
                 if (name.endsWith(".mp4") || name.endsWith(".mpeg4")) {
 
                     // Use absolute path as an identifier
-                    String path = file.getAbsolutePath();
+                    String path = file.getPath();
 
                     // Check if movie already exists in DB to avoid duplicates
                     if (movieDAO.getAllMovies().stream()
-                            .anyMatch(m -> m.getFilePath().equals(path))) {
+                            .anyMatch(m -> m.getTitle().equalsIgnoreCase(file.getName()))) {
                         continue; // skip duplicates
                     }
 
@@ -100,7 +98,7 @@ public class MovieManager
                 }
             }
 
-        } catch (SQLException e) {
+    } catch (SQLException e) {
             e.printStackTrace();
         }
     }
