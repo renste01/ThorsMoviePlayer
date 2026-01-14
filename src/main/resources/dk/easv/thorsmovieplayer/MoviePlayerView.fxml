@@ -23,9 +23,8 @@
     <top>
         <MenuBar>
             <Menu text="Movie">
-                <MenuItem text="Add Movie" />
-                <MenuItem text="Remove Movie" />
-                <MenuItem text="Update Movie" />
+                <MenuItem onAction="#handleAddMovie" text="Add Movie" />
+                <MenuItem onAction="#handleRemoveMovie" text="Remove Movie" />
                 <SeparatorMenuItem />
                 <MenuItem text="Exit" />
             </Menu>
@@ -34,7 +33,6 @@
                 <MenuItem onAction="#handleAddCategory" text="Add Category" />
                 <MenuItem onAction="#handleRemoveCategory" text="Remove Category" />
             </Menu>
-            <Menu text="About" />
         </MenuBar>
     </top>
 
@@ -55,7 +53,7 @@
 
             <HBox spacing="5" />
 
-            <Label text="Min IMDB Rating" />
+            <Label text="Minimum IMDB Rating" />
             <Slider fx:id="ratingSlider" max="10" min="0" showTickLabels="true" value="0" />
 
             <Button onAction="#clearFilters" text="Clear Filters" />
@@ -115,18 +113,7 @@
 
             <Label text="My Rating" />
             <Label fx:id="currentRatingLabel" text="0.0" />
-            <Slider fx:id="personalRatingSlider"
-                    max="10"
-                    min="0"
-                    blockIncrement="0.1"
-                    majorTickUnit="1"
-                    minorTickCount="9"
-                    showTickLabels="true"
-                    showTickMarks="true"
-                    snapToTicks="true"
-                    value="0"
-                    onMouseReleased="#handleRatingChange"
-                    onKeyReleased="#handleRatingChange"/>
+            <Slider fx:id="personalRatingSlider" blockIncrement="0.1" majorTickUnit="1" max="10" min="0" minorTickCount="9" onKeyReleased="#handleRatingChange" onMouseReleased="#handleRatingChange" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="0" />
             <Button onAction="#playMovie" text="Play Movie" />
         </VBox>
     </right>

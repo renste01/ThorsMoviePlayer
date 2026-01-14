@@ -12,12 +12,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.collections.ListChangeListener;
+import javafx.stage.FileChooser;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -423,7 +423,7 @@ public class MoviePlayerController implements Initializable {
     }
 
     // Refreshes the movie table with updated data
-    private void refreshMovieTable() throws SQLException {
+    public void refreshMovieTable() throws SQLException {
         allMovies.clear();
         allMovies.addAll(movieModel.getMovies());
         applyFilters();
@@ -459,5 +459,60 @@ public class MoviePlayerController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+    @FXML
+    private void handleAddMovie(ActionEvent actionEvent)
+    {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select Movie file");
+
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Video Files", "*.mp4", "*.mpeg4")
+        );
+
+        File file = fileChooser.showOpenDialog(movieTable.getScene().getWindow());
+        if (file == null) return;
+
+        try
+        {
+            Movie movie = new Movie(0, file.getName(), 0f, 0f, file.getAbsolutePath(), null);
+            movieModel.createMovie(movie);
+            allMovies.add(movie);
+            showInfo("Movie added: " + file.getName());
+
+        } catch (SQLException e) {
+            showError("Could not add movie: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleRemoveMovie(ActionEvent actionEvent)
+    {
+        Movie selectedMovie = movieTable.getSelectionModel().getSelectedItem();
+
+        if (selectedMovie == null)
+        {
+            showWarning("Please select a movie to delete!");
+            return;
+        }
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete movie");
+        alert.setHeaderText("Are you sure you want to delete this movie?");
+        alert.setContentText("Movie: " + selectedMovie.getTitle());
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK)
+        {
+            try
+            {
+                movieModel.deleteMovie(selectedMovie);
+
+                allMovies.remove(selectedMovie);
+                showInfo("Movie deleted successfully!");
+            }
+            catch (Exception e)
+            {
+                showError("Error deleting movie: " + e.getMessage());
+            }
+        }
     }
 }

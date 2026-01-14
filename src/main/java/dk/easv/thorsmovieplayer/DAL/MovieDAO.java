@@ -76,7 +76,7 @@
         {
             String sql = """
                 UPDATE Movie
-                SET title = ?, imdbRating = ?, personalRating = ?, filePath = ?, lastView = ?
+                SET title = ?, imdbRating = ?, personalRating = ?
                 WHERE id = ?
                 """;
 
@@ -101,13 +101,13 @@
         // DELETE
         public void deleteMovie(Movie movie) throws SQLException
         {
-            String sql = "DELETE FROM Movie WHERE id = ?";
+            String sqlMovie = "DELETE FROM Movie WHERE id = ?";
 
             try (Connection conn = DBConnector.getConnection();
-                 PreparedStatement ps = conn.prepareStatement(sql))
+                 PreparedStatement psMov = conn.prepareStatement(sqlMovie))
             {
-                ps.setInt(1, movie.getId());
-                ps.executeUpdate();
+                psMov.setInt(1, movie.getId());
+                psMov.executeUpdate();
             }
         }
 

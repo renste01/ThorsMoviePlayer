@@ -1,11 +1,13 @@
 package dk.easv.thorsmovieplayer.BLL;
-
+// Project imports
 import dk.easv.thorsmovieplayer.BE.Movie;
 import dk.easv.thorsmovieplayer.DAL.CategoryDAO;
 import dk.easv.thorsmovieplayer.DAL.MovieDAO;
-
+// Java imports
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -13,6 +15,7 @@ public class MovieManager
 {
     private MovieDAO movieDAO;
     private CategoryDAO categoryDAO;
+    private static final String DATA_FOLDER = "data";
 
     public MovieManager() throws IOException
     {
@@ -29,19 +32,30 @@ public class MovieManager
             List<dk.easv.thorsmovieplayer.BE.Category> categories = categoryDAO.getCategoriesForMovie(movie.getId());
             movie.setCategories(categories);
         }
-
         return movies;
     }
 
-
-
     public Movie createMovie(Movie movie) throws SQLException
     {
-        return movieDAO.createMovie(movie);
-    }
+        if (movie == null)
+        {
+            throw new IllegalArgumentException("Movie cannot be null");
+        }
 
-    public void updateMovie(Movie movie) throws SQLException {
-        movieDAO.updateMovie(movie);
+        File file = new File(movie.getFilePath());
+        if (!file.exists())
+        {
+            throw new IllegalArgumentException("Movie file does not exist");
+        }
+        // Checks if file is in data folder
+        if (!isFileInDataFolder(file))
+        {
+            throw new IllegalArgumentException("Movie files must be located in the 'data' folder. Please move your file to: " + new File(DATA_FOLDER).getAbsolutePath());
+        }
+        Movie m = new Movie(0, file.getName(), 0f, 0f, file.getAbsolutePath(), null);
+
+        return movieDAO.createMovie(movie);
+
     }
 
     public void deleteMovie(Movie movie) throws SQLException {
@@ -53,54 +67,41 @@ public class MovieManager
         movieDAO.updateMovie(movie);
     }
 
+/* This method checks to see if the file is in the data folder, and if not it creates a copy in that folder so the
+  movie can be played*/
+    private boolean isFileInDataFolder(File file)
+    {
+        try
+        {
+            File dataDir = new File(DATA_FOLDER);
 
-    public void importMoviesFromFolder(String data) throws IOException {
-        try {
-            MovieDAO movieDAO = new MovieDAO();
-            File folder = new File(data);
-
-            if (!folder.exists() || !folder.isDirectory()) {
-                System.out.println("Invalid folder: " + data);
-                return;
+            // Makes sure the data folder exists
+            if (!dataDir.exists())
+            {
+                dataDir.mkdirs();
             }
 
-            File[] files = folder.listFiles();
-            if (files == null) return;
+            String filePath = file.getCanonicalPath();
+            String dataPath = dataDir.getCanonicalPath();
 
-            for (File file : files) {
-                if (!file.isFile()) continue;
-
-                String name = file.getName().toLowerCase();
-                if (name.endsWith(".mp4") || name.endsWith(".mpeg4")) {
-
-                    // Use absolute path as an identifier
-                    String path = file.getPath();
-
-                    // Check if movie already exists in DB to avoid duplicates
-                    if (movieDAO.getAllMovies().stream()
-                            .anyMatch(m -> m.getTitle().equalsIgnoreCase(file.getName()))) {
-                        continue; // skip duplicates
-                    }
-
-                    // Create Movie object
-                    Movie movie = new Movie(
-                            0,
-                            file.getName(),
-                            0.0f,
-                            0.0f,
-                            file.getAbsolutePath(),
-                            null
-                    );
-
-                    // Save movie to the databse
-                    movieDAO.createMovie(movie);
-                    System.out.println("Imported movie: " + path);
-                }
+            // Checks if file is already in the data folder
+            if (filePath.startsWith(dataPath))
+            {
+                return true;
             }
 
-    } catch (SQLException e) {
+            // If not, copies the file into data folder
+            Files.copy(
+                    file.toPath(),
+                    new File(dataDir, file.getName()).toPath(),
+                    StandardCopyOption.REPLACE_EXISTING
+            );
+            return true;
+        }
+        catch (IOException e)
+        {
             e.printStackTrace();
+            return false;
         }
     }
-
 }
