@@ -50,6 +50,7 @@ public class MoviePlayerController implements Initializable {
     private Label detailImdb;
     @FXML
     private Slider personalRatingSlider;
+    @FXML private Slider imdbRatingSlider;
     @FXML
     private Label currentRatingLabel;
     private MovieModel movieModel;
@@ -161,19 +162,46 @@ public class MoviePlayerController implements Initializable {
         );
     }
 
-    // Displays details of the selected movie in the right panel
     private void showMovieDetails(Movie movie) {
-        detailTitle.setText("Title: " + movie.getTitle());
-        detailImdb.setText("IMDB Rating: " + String.format("%.1f", movie.getImdbRating()));
+        if (movie == null) return;
 
-        // Display categories as comma-separated list
+        detailTitle.setText("Title: " + movie.getTitle());
+
+        // Display categories
         String categories = movie.getCategories().stream()
                 .map(Category::getName)
                 .collect(Collectors.joining(", "));
         detailCategories.setText("Categories: " + (categories.isEmpty() ? "None" : categories));
 
-        personalRatingSlider.setValue(movie.getPersonalRating());
-        currentRatingLabel.setText(String.format("%.1f", movie.getPersonalRating()));
+        // Show IMDB rating - MAKE SURE THESE 2 LINES EXIST:
+        float imdbRating = movie.getImdbRating();
+        detailImdb.setText("IMDB: " + imdbRating);
+        imdbRatingSlider.setValue(imdbRating);  // ← THIS LINE SETS THE SLIDER!
+
+        // Show personal rating
+        float personalRating = movie.getPersonalRating();
+        currentRatingLabel.setText(String.valueOf(personalRating));
+        personalRatingSlider.setValue(personalRating);
+    }
+
+    // Add this method to handle IMDB rating changes
+    @FXML
+    private void handleImdbRatingChange() {
+        Movie selectedMovie = movieTable.getSelectionModel().getSelectedItem();
+        if (selectedMovie != null) {
+            float newImdbRating = (float) imdbRatingSlider.getValue();
+
+            // Update the movie object
+            selectedMovie.setImdbRating(newImdbRating);
+            detailImdb.setText("IMDB: " + newImdbRating);
+
+            // Update in the table (refresh the cell)
+            movieTable.refresh();
+
+            showInfo("IMDB rating updated to: " + String.format("%.1f", newImdbRating));
+        } else {
+            showWarning("Please select a movie first.");
+        }
     }
 
     // Handles changes to the personal rating slider
