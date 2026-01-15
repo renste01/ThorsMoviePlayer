@@ -35,6 +35,10 @@ public class MovieManager
         return movies;
     }
 
+    public void updateMovie(Movie movie) throws SQLException {
+        movieDAO.updateMovie(movie);
+    }
+
     public Movie createMovie(Movie movie) throws SQLException
     {
         if (movie == null)

@@ -184,21 +184,29 @@ public class MoviePlayerController implements Initializable {
         personalRatingSlider.setValue(personalRating);
     }
 
-    // Add this method to handle IMDB rating changes
     @FXML
     private void handleImdbRatingChange() {
         Movie selectedMovie = movieTable.getSelectionModel().getSelectedItem();
         if (selectedMovie != null) {
             float newImdbRating = (float) imdbRatingSlider.getValue();
 
-            // Update the movie object
-            selectedMovie.setImdbRating(newImdbRating);
-            detailImdb.setText("IMDB: " + newImdbRating);
+            try {
+                // Update the movie object
+                selectedMovie.setImdbRating(newImdbRating);
 
-            // Update in the table (refresh the cell)
-            movieTable.refresh();
+                // Save to database using updateMovie()
+                // This requires MovieModel to have a method that calls updateMovie
+                movieModel.updateMovie(selectedMovie);
 
-            showInfo("IMDB rating updated to: " + String.format("%.1f", newImdbRating));
+                detailImdb.setText("IMDB: " + newImdbRating);
+                movieTable.refresh();
+
+                showInfo("IMDB rating updated to: " + String.format("%.1f", newImdbRating));
+            } catch (Exception e) {
+                showError("Error saving IMDB rating: " + e.getMessage());
+                // Revert slider if save fails
+                imdbRatingSlider.setValue(selectedMovie.getImdbRating());
+            }
         } else {
             showWarning("Please select a movie first.");
         }

@@ -147,5 +147,9 @@ public class MovieModel {
             throw new IOException("Desktop operations not supported on this system!");
         }
     }
+    // In MovieModel.java, add this method:
+    public void updateMovie(Movie movie) throws SQLException {
+        movieManager.updateMovie(movie);
+    }
 
 }
