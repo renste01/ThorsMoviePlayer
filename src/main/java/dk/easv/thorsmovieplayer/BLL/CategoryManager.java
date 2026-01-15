@@ -1,8 +1,9 @@
     package dk.easv.thorsmovieplayer.BLL;
-
+    // Project imports
     import dk.easv.thorsmovieplayer.BE.Category;
     import dk.easv.thorsmovieplayer.BE.Movie;
     import dk.easv.thorsmovieplayer.DAL.CategoryDAO;
+    // Java Imports
     import java.io.IOException;
     import java.sql.SQLException;
     import java.util.List;

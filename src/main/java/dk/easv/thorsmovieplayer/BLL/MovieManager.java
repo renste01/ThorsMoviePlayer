@@ -38,14 +38,14 @@ public class MovieManager
     public void updateMovie(Movie movie) throws SQLException {
         movieDAO.updateMovie(movie);
     }
-
+    // Adds/create a movie using a file
     public Movie createMovie(Movie movie) throws SQLException
     {
         if (movie == null)
         {
             throw new IllegalArgumentException("Movie cannot be null");
         }
-
+        // Checks if file exist
         File file = new File(movie.getFilePath());
         if (!file.exists())
         {
@@ -71,8 +71,8 @@ public class MovieManager
         movieDAO.updateMovie(movie);
     }
 
-/* This method checks to see if the file is in the data folder, and if not it creates a copy in that folder so the
-  movie can be played*/
+    /* This method checks to see if the file is in the data folder, and if not it creates a copy in that folder so the
+    movie can be played*/
     private boolean isFileInDataFolder(File file)
     {
         try

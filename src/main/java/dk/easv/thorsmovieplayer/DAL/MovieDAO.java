@@ -2,7 +2,6 @@ package dk.easv.thorsmovieplayer.DAL;
 
 // Project imports
 import dk.easv.thorsmovieplayer.BE.Movie;
-
 // Java imports
 import java.io.IOException;
 import java.sql.*;
@@ -19,7 +18,7 @@ public class MovieDAO
         this.dbConnector = DBConnector.getInstance();
     }
 
-    // CREATE
+    // Creates a movie in the database
     public Movie createMovie(Movie movie) throws SQLException
     {
         String sql = """
@@ -50,7 +49,7 @@ public class MovieDAO
         return movie;
     }
 
-    // READ ALL
+    // Reads all the movies in the database
     public List<Movie> getAllMovies() throws SQLException
     {
         List<Movie> movies = new ArrayList<>();
@@ -70,7 +69,7 @@ public class MovieDAO
         return movies;
     }
 
-    // UPDATE - CORRECTED VERSION (3 SET values + WHERE)
+    // Updates the database if any changes happen
     public void updateMovie(Movie movie) throws SQLException
     {
         String sql = """
@@ -98,7 +97,7 @@ public class MovieDAO
         }
     }
 
-    // DELETE
+    // Deletes the movie from the databse
     public void deleteMovie(Movie movie) throws SQLException
     {
         String sqlMovie = "DELETE FROM Movie WHERE id = ?";
@@ -111,7 +110,7 @@ public class MovieDAO
         }
     }
 
-    // MAPPER
+    // Maps the movies
     private Movie mapRowToMovie(ResultSet rs) throws SQLException
     {
         LocalDate lastView = null;

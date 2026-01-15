@@ -1,5 +1,5 @@
 package dk.easv.thorsmovieplayer;
-
+// Java Imports
 import javafx.application.Application;
 
 public class MoviePlayerMain {

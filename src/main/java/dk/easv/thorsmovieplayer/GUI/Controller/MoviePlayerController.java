@@ -1,8 +1,9 @@
 package dk.easv.thorsmovieplayer.GUI.Controller;
-
+// Project Imports
 import dk.easv.thorsmovieplayer.BE.Category;
 import dk.easv.thorsmovieplayer.BE.Movie;
 import dk.easv.thorsmovieplayer.GUI.Model.MovieModel;
+// Java Imports
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -13,7 +14,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.collections.ListChangeListener;
 import javafx.stage.FileChooser;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -50,7 +50,8 @@ public class MoviePlayerController implements Initializable {
     private Label detailImdb;
     @FXML
     private Slider personalRatingSlider;
-    @FXML private Slider imdbRatingSlider;
+    @FXML
+    private Slider imdbRatingSlider;
     @FXML
     private Label currentRatingLabel;
     private MovieModel movieModel;
@@ -161,7 +162,7 @@ public class MoviePlayerController implements Initializable {
                 }
         );
     }
-
+    // Shows the movie details in the right hand side
     private void showMovieDetails(Movie movie) {
         if (movie == null) return;
 
@@ -191,11 +192,10 @@ public class MoviePlayerController implements Initializable {
             float newImdbRating = (float) imdbRatingSlider.getValue();
 
             try {
-                // Update the movie object
+                // Updates the movie object
                 selectedMovie.setImdbRating(newImdbRating);
 
-                // Save to database using updateMovie()
-                // This requires MovieModel to have a method that calls updateMovie
+                // Saves the changes to the databse
                 movieModel.updateMovie(selectedMovie);
 
                 detailImdb.setText("IMDB: " + newImdbRating);
@@ -451,9 +451,9 @@ public class MoviePlayerController implements Initializable {
             try
             {
                 selectedMovie.setLastView(java.time.LocalDate.now());
-                movieModel.updateMovie(selectedMovie); // Make sure this calls MovieDAO.updateMovie or a dedicated updateLastView
-                movieTable.refresh();
-                movieModel.openMovieInSystemPlayer(selectedMovie);
+                movieModel.updateMovie(selectedMovie); // updates the lastView in the databse
+                movieTable.refresh(); // refreshes the table with the new data
+                movieModel.openMovieInSystemPlayer(selectedMovie); // Opens selected movie in the mediaplayer
             } catch (Exception e)
             {
                 showError("Error playing movie: " + e.getMessage());
@@ -498,14 +498,15 @@ public class MoviePlayerController implements Initializable {
         alert.setContentText(message);
         alert.showAndWait();
     }
+    // Adds movies to the program and database
     @FXML
     private void handleAddMovie(ActionEvent actionEvent)
     {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select Movie file");
+        fileChooser.setTitle("Select Movie file"); // Opens window to choose a file
 
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Video Files", "*.mp4", "*.mpeg4")
-        );
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter( "*.mp4", "*.mpeg4")
+        ); // Makes sure it only accepts mp4 or mpeg4 files
 
         File file = fileChooser.showOpenDialog(movieTable.getScene().getWindow());
         if (file == null) return;
@@ -521,7 +522,7 @@ public class MoviePlayerController implements Initializable {
             showError("Could not add movie: " + e.getMessage());
         }
     }
-
+    // Removes the movie from the program and the database.
     @FXML
     private void handleRemoveMovie(ActionEvent actionEvent)
     {

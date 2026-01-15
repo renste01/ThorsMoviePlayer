@@ -1,8 +1,7 @@
 package dk.easv.thorsmovieplayer.DAL;
-
+// SQL Imports
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
-
 // Java Imports
 import java.io.File;
 import java.io.FileInputStream;

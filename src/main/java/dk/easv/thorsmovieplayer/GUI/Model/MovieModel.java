@@ -1,5 +1,5 @@
 package dk.easv.thorsmovieplayer.GUI.Model;
-// Project imports
+// Project Imports
 import dk.easv.thorsmovieplayer.BE.Category;
 import dk.easv.thorsmovieplayer.BE.Movie;
 import dk.easv.thorsmovieplayer.BLL.CategoryManager;
@@ -17,12 +17,10 @@ import java.util.List;
 public class MovieModel {
     private ObservableList<Movie> movies;
     private MovieManager movieManager;
-    // List to store all available categories
-    private ObservableList<Category> categories;
-    // Manager to handle category database operations
-    private CategoryManager categoryManager;
+    private ObservableList<Category> categories; // List to store all available categories
+    private CategoryManager categoryManager; // Manager to handle category database operations
 
-    // Constructor - sets up the model with movies and categories
+    // Constructor class
     public MovieModel() throws IOException, SQLException
     {
         movieManager = new MovieManager();
@@ -126,7 +124,7 @@ public class MovieModel {
         }
         return filteredMovies;
     }
-
+    // Opens the systems movieplayer if desktop is supported
     public void openMovieInSystemPlayer(Movie movie) throws IOException
     {
         if (movie == null || movie.getFilePath() == null)
@@ -134,7 +132,6 @@ public class MovieModel {
             throw new IllegalArgumentException("Movie or file path is not found!");
         }
 
-        // Brug projektets data-mappe som base
         String basePath = "data/";
 
         File movieFile = new File(basePath + movie.getFilePath());
@@ -155,6 +152,9 @@ public class MovieModel {
         movie.setLastView(LocalDate.now());
 
     }
-    public void updateMovie(Movie movie) throws SQLException {movieManager.updateMovie(movie);}
+
+    public void updateMovie(Movie movie) throws SQLException {
+        movieManager.updateMovie(movie);
+    }
 
 }

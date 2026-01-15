@@ -1,8 +1,8 @@
 package dk.easv.thorsmovieplayer.DAL;
-
+// Project Imports
 import dk.easv.thorsmovieplayer.BE.Category;
 import dk.easv.thorsmovieplayer.BE.Movie;
-
+// Java Imports
 import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;
@@ -60,7 +60,7 @@ public class CategoryDAO {
             stmt.executeUpdate();
         }
 
-        // Then delete the category itself
+        // Then deletes the category itself
         String deleteCategorySql = "DELETE FROM Category WHERE id = ?";
         try (Connection conn = dbConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(deleteCategorySql)) {
