@@ -119,7 +119,7 @@ public class MovieModel {
                     break;
                 }
             }
-            // If movie has all categories, add it to filtered list
+            // If a movie has all categories, add it to filtered list
             if (hasAllCategories) {
                 filteredMovies.add(movie);
             }
@@ -127,9 +127,10 @@ public class MovieModel {
         return filteredMovies;
     }
 
-    //
-    public void openMovieInSystemPlayer(Movie movie) throws IOException {
-        if (movie == null || movie.getFilePath() == null) {
+    public void openMovieInSystemPlayer(Movie movie) throws IOException
+    {
+        if (movie == null || movie.getFilePath() == null)
+        {
             throw new IllegalArgumentException("Movie or file path is not found!");
         }
 
@@ -138,21 +139,22 @@ public class MovieModel {
 
         File movieFile = new File(basePath + movie.getFilePath());
 
-        if (!movieFile.exists()) {
+        if (!movieFile.exists())
+        {
             throw new IOException("Movie file does not exist: " + movieFile.getAbsolutePath());
         }
 
-        if (Desktop.isDesktopSupported()) {
+        if (Desktop.isDesktopSupported())
+        {
             Desktop.getDesktop().open(movieFile);
-        } else {
+        }
+        else
+        {
             throw new IOException("Desktop operations not supported on this system!");
         }
         movie.setLastView(LocalDate.now());
 
     }
-    // In MovieModel.java, add this method:
-    public void updateMovie(Movie movie) throws SQLException {
-        movieManager.updateMovie(movie);
-    }
+    public void updateMovie(Movie movie) throws SQLException {movieManager.updateMovie(movie);}
 
 }

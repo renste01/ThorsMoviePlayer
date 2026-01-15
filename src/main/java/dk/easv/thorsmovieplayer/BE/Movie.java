@@ -99,7 +99,7 @@ public class Movie {
         return categories.contains(category);
     }
 
-    // Returns movie title and IMDB rating when displayed in lists
+    // Returns the movie title and IMDB rating when displayed in lists
     @Override
     public String toString() {
         return title + " (" + imdbRating + ")";

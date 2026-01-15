@@ -443,19 +443,25 @@ public class MoviePlayerController implements Initializable {
 
     // Plays the selected movie and updates last view date
     @FXML
-    private void playMovie(ActionEvent actionEvent) {
+    private void playMovie(ActionEvent actionEvent)
+    {
         Movie selectedMovie = movieTable.getSelectionModel().getSelectedItem();
-        if (selectedMovie != null) {
-            try {
+        if (selectedMovie != null)
+        {
+            try
+            {
                 selectedMovie.setLastView(java.time.LocalDate.now());
                 movieModel.updateMovie(selectedMovie); // Make sure this calls MovieDAO.updateMovie or a dedicated updateLastView
                 movieTable.refresh();
                 showInfo("Playing movie: " + selectedMovie.getTitle());
                 movieModel.openMovieInSystemPlayer(selectedMovie);
-            } catch (Exception e) {
+            } catch (Exception e)
+            {
                 showError("Error playing movie: " + e.getMessage());
             }
-        } else {
+        }
+        else
+        {
             showWarning("Please select a movie to play.");
         }
     }
@@ -465,11 +471,6 @@ public class MoviePlayerController implements Initializable {
         allMovies.clear();
         allMovies.addAll(movieModel.getMovies());
         applyFilters();
-    }
-
-    @FXML
-    protected void onHelloButtonClick() {
-        welcomeText.setText("Welcome to JavaFX Application!");
     }
 
     // Shows an error dialog with the given message
