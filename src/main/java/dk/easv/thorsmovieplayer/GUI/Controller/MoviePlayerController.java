@@ -514,5 +514,7 @@ public class MoviePlayerController implements Initializable {
                 showError("Error deleting movie: " + e.getMessage());
             }
         }
+
     }
+
 }

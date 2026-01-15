@@ -127,19 +127,25 @@ public class MovieModel {
     }
 
     //
-    public void openMovieInSystemPlayer(Movie movie) throws IOException
-    {
+    public void openMovieInSystemPlayer(Movie movie) throws IOException {
         if (movie == null || movie.getFilePath() == null) {
             throw new IllegalArgumentException("Movie or file path is not found!");
         }
-        File movieFile = new File(movie.getFilePath());
+
+        // Brug projektets data-mappe som base
+        String basePath = "data/";
+
+        File movieFile = new File(basePath + movie.getFilePath());
+
         if (!movieFile.exists()) {
-            throw new IOException("Movie file does not exist: " + movie.getFilePath());
+            throw new IOException("Movie file does not exist: " + movieFile.getAbsolutePath());
         }
+
         if (Desktop.isDesktopSupported()) {
             Desktop.getDesktop().open(movieFile);
         } else {
             throw new IOException("Desktop operations not supported on this system!");
         }
     }
+
 }
