@@ -448,6 +448,8 @@ public class MoviePlayerController implements Initializable {
         if (selectedMovie != null) {
             try {
                 selectedMovie.setLastView(java.time.LocalDate.now());
+                movieModel.updateMovie(selectedMovie); // Make sure this calls MovieDAO.updateMovie or a dedicated updateLastView
+                movieTable.refresh();
                 showInfo("Playing movie: " + selectedMovie.getTitle());
                 movieModel.openMovieInSystemPlayer(selectedMovie);
             } catch (Exception e) {

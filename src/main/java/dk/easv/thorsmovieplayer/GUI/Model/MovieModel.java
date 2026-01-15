@@ -11,6 +11,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 public class MovieModel {
@@ -146,6 +147,8 @@ public class MovieModel {
         } else {
             throw new IOException("Desktop operations not supported on this system!");
         }
+        movie.setLastView(LocalDate.now());
+
     }
     // In MovieModel.java, add this method:
     public void updateMovie(Movie movie) throws SQLException {

@@ -90,10 +90,18 @@
                             <PropertyValueFactory property="personalRating" />
                         </cellValueFactory>
                     </TableColumn>
+               <TableColumn fx:id="lastViewColumn" prefWidth="120" text="Last viewed">
+                  <cellValueFactory>
+                     <PropertyValueFactory property="lastView" />
+                  </cellValueFactory>
+               </TableColumn>
                 </columns>
                 <BorderPane.margin>
                     <Insets bottom="10.0" left="10.0" right="10.0" />
                 </BorderPane.margin>
+            <columnResizePolicy>
+               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
             </TableView>
         </VBox>
     </center>

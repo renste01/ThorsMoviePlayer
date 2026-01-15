@@ -75,7 +75,7 @@ public class MovieDAO
     {
         String sql = """
             UPDATE Movie
-            SET title = ?, imdbRating = ?, personalRating = ?
+            SET title = ?, imdbRating = ?, personalRating = ?, lastView = ?
             WHERE id = ?
             """;
 
@@ -86,9 +86,13 @@ public class MovieDAO
             ps.setString(1, movie.getTitle());
             ps.setFloat(2, movie.getImdbRating());
             ps.setFloat(3, movie.getPersonalRating());
-
+            if (movie.getLastView() != null) {
+                ps.setTimestamp(4, Timestamp.valueOf(movie.getLastView().atStartOfDay()));
+            } else {
+                ps.setNull(4, Types.TIMESTAMP);
+            }
             // Set the WHERE condition (4th parameter)
-            ps.setInt(4, movie.getId());
+            ps.setInt(5, movie.getId());
 
             ps.executeUpdate();
         }
