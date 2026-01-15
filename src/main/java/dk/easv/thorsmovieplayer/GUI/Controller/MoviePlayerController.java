@@ -173,10 +173,10 @@ public class MoviePlayerController implements Initializable {
                 .collect(Collectors.joining(", "));
         detailCategories.setText("Categories: " + (categories.isEmpty() ? "None" : categories));
 
-        // Show IMDB rating - MAKE SURE THESE 2 LINES EXIST:
+        // Show IMDB rating
         float imdbRating = movie.getImdbRating();
         detailImdb.setText("IMDB: " + imdbRating);
-        imdbRatingSlider.setValue(imdbRating);  // ← THIS LINE SETS THE SLIDER!
+        imdbRatingSlider.setValue(imdbRating);
 
         // Show personal rating
         float personalRating = movie.getPersonalRating();
