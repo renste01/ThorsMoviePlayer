@@ -1,12 +1,10 @@
 package dk.easv.thorsmovieplayer.BE;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Movie {
-
     private int id;
     private String title;
     private float imdbRating;
@@ -15,7 +13,7 @@ public class Movie {
     private LocalDate lastView;
     private List<Category> categories;
 
-    // konstruktør til at hente vores film fra sql databasen
+    // Constructor for loading movies from database
     public Movie(int id, String title, float imdbRating, float personalRating, String filePath, LocalDate lastView) {
         this.id = id;
         this.title = title;
@@ -25,36 +23,85 @@ public class Movie {
         this.lastView = lastView;
         this.categories = new ArrayList<>();
     }
-    // konstruktør til at lave nye film
+
+    // Constructor for creating new movies
     public Movie(String title, float imdbRating, String filePath) {
         this.title = title;
         this.imdbRating = imdbRating;
         this.filePath = filePath;
-        //Opmærksom den er ikke i konstruktør parameteren
         this.personalRating = 0.0f;
         this.lastView = null;
         this.categories = new ArrayList<>();
     }
 
-     // getter metoder
-    public int getId() {return id;}
-    public String getTitle() {return title;}
-    public float getImdbRating() {return imdbRating;}
-    public float getPersonalRating(){return personalRating;}
-    public String getFilePath() {return filePath;}
-    public LocalDate getLastView() {return lastView;}
-    public List<Category> getCategories() {return categories;}
+    // Getter methods
+    public int getId() {
+        return id;
+    }
 
-    // setter metoderne kan tilføjes flere senere
-    public void setId(int Id){this.id = Id;}
-    public void setPersonalRating(float personalRating) {this.personalRating = personalRating;}
-    public void setLastView(LocalDate lastView){this.lastView = lastView;}
-    public void setCategories(List<Category> categories){this.categories = categories;}
+    public String getTitle() {
+        return title;
+    }
 
-    // til movie Objekt når det printes i listview
+    public float getImdbRating() {
+        return imdbRating;
+    }
+
+    public float getPersonalRating() {
+        return personalRating;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public LocalDate getLastView() {
+        return lastView;
+    }
+
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    // Setter methods
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setImdbRating(float imdbRating) {
+        this.imdbRating = imdbRating;
+    }
+
+    public void setPersonalRating(float personalRating) {
+        this.personalRating = personalRating;
+    }
+
+    public void setLastView(LocalDate lastView) {
+        this.lastView = lastView;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
+    }
+
+    // Category management methods
+    public void addCategory(Category category) {
+        if (!categories.contains(category)) {
+            categories.add(category);
+        }
+    }
+
+    public void removeCategory(Category category) {
+        categories.remove(category);
+    }
+
+    public boolean hasCategory(Category category) {
+        return categories.contains(category);
+    }
+
+    // Returns movie title and IMDB rating when displayed in lists
     @Override
-    public String toString() {return title + " (" + imdbRating + ")";}
-    public void addCategory(Category category) {categories.add(category);}
-    public void removeCategory(Category category) {categories.remove(category);
+    public String toString() {
+        return title + " (" + imdbRating + ")";
     }
 }

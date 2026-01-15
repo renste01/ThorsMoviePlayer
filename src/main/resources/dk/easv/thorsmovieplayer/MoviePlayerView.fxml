@@ -109,11 +109,22 @@
 
             <Label fx:id="detailTitle" />
             <Label fx:id="detailCategories" />
-            <Label fx:id="detailImdb" />
 
+            <!-- IMDB Rating Section -->
+            <Label text="IMDB Rating" />
+            <Label fx:id="detailImdb" />
+            <Slider fx:id="imdbRatingSlider" blockIncrement="0.1" majorTickUnit="1" max="10" min="0"
+                    minorTickCount="9" showTickLabels="true" showTickMarks="true"
+                    snapToTicks="true" value="0"
+                    onKeyReleased="#handleImdbRatingChange" onMouseReleased="#handleImdbRatingChange" />
+
+            <!-- Personal Rating Section -->
             <Label text="My Rating" />
             <Label fx:id="currentRatingLabel" text="0.0" />
-            <Slider fx:id="personalRatingSlider" blockIncrement="0.1" majorTickUnit="1" max="10" min="0" minorTickCount="9" onKeyReleased="#handleRatingChange" onMouseReleased="#handleRatingChange" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="0" />
+            <Slider fx:id="personalRatingSlider" blockIncrement="0.1" majorTickUnit="1" max="10" min="0"
+                    minorTickCount="9" onKeyReleased="#handleRatingChange" onMouseReleased="#handleRatingChange"
+                    showTickLabels="true" showTickMarks="true" snapToTicks="true" value="0" />
+
             <Button onAction="#playMovie" text="Play Movie" />
         </VBox>
     </right>
